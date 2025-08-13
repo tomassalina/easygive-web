@@ -1,32 +1,32 @@
-"use client"
+"use client";
 
-import { Button } from "@/components/ui/button"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
-import { PlaneIcon, HeartIcon, LogOutIcon } from "lucide-react"
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { useDonation } from "@/contexts/donation-context"
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { PlaneIcon, HeartIcon, LogOutIcon } from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useDonation } from "@/contexts/donation-context";
 
 interface NavigationProps {
-  variant?: "aerobooking" | "donar-facil"
+  variant?: "aerobooking" | "donar-facil";
 }
 
 export function Navigation({ variant = "aerobooking" }: NavigationProps) {
-  const pathname = usePathname()
-  const { user, isLoggedIn, logout, login } = useDonation()
+  const pathname = usePathname();
+  const { user, isLoggedIn, logout, login } = useDonation();
 
   const handleGoogleLogin = () => {
     login({
       name: "María González",
       email: "maria.gonzalez@gmail.com",
       avatar: "/woman-profile.png",
-    })
-  }
+    });
+  };
 
   const handleConnectWallet = () => {
-    alert("Connect Wallet clicked!")
-  }
+    alert("Connect Wallet clicked!");
+  };
 
   if (variant === "donar-facil") {
     return (
@@ -41,7 +41,8 @@ export function Navigation({ variant = "aerobooking" }: NavigationProps) {
                 <span className="text-2xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
                   DonaFacil {/* kept brand name as is */}
                 </span>
-                <p className="text-xs text-gray-600">Blockchain transparency</p> {/* translated tagline */}
+                <p className="text-xs text-gray-600">Blockchain transparency</p>{" "}
+                {/* translated tagline */}
               </div>
             </Link>
             <div className="flex items-center space-x-4">
@@ -55,16 +56,24 @@ export function Navigation({ variant = "aerobooking" }: NavigationProps) {
               {isLoggedIn ? (
                 <div className="flex items-center space-x-3">
                   <Avatar className="h-8 w-8">
-                    <AvatarImage src={user?.avatar || "/placeholder.svg"} alt={user?.name} />
+                    <AvatarImage
+                      src={user?.avatar || "/placeholder.svg"}
+                      alt={user?.name}
+                    />
                     <AvatarFallback>MG</AvatarFallback>
                   </Avatar>
-                  <span className="text-sm font-medium text-gray-700">{user?.name}</span>
+                  <span className="text-sm font-medium text-gray-700">
+                    {user?.name}
+                  </span>
                   <Button variant="ghost" size="sm" onClick={logout}>
                     <LogOutIcon className="h-4 w-4" />
                   </Button>
                 </div>
               ) : (
-                <Button onClick={handleGoogleLogin} className="bg-white text-gray-700 border hover:bg-gray-50">
+                <Button
+                  onClick={handleGoogleLogin}
+                  className="bg-white text-gray-700 border hover:bg-gray-50"
+                >
                   <svg className="h-4 w-4 mr-2" viewBox="0 0 24 24">
                     <path
                       fill="#4285F4"
@@ -95,7 +104,7 @@ export function Navigation({ variant = "aerobooking" }: NavigationProps) {
           </div>
         </div>
       </header>
-    )
+    );
   }
 
   return (
@@ -104,20 +113,32 @@ export function Navigation({ variant = "aerobooking" }: NavigationProps) {
         <div className="flex justify-between items-center h-14 sm:h-16">
           <Link href="/" className="flex items-center space-x-2">
             <PlaneIcon className="h-6 sm:h-8 w-6 sm:w-8 text-blue-600" />
-            <span className="text-xl sm:text-2xl font-bold text-gray-900">AeroBooking</span>
+            <span className="text-xl sm:text-2xl font-bold text-gray-900">
+              AeroBooking
+            </span>
           </Link>
           <div className="flex items-center space-x-2 sm:space-x-8">
             <nav className="hidden md:flex space-x-6 lg:space-x-8">
               <Link
                 href="/"
-                className={`font-medium text-sm lg:text-base ${pathname === "/" ? "text-blue-600" : "text-gray-700 hover:text-blue-600"}`}
+                className={`font-medium text-sm lg:text-base ${
+                  pathname === "/"
+                    ? "text-blue-600"
+                    : "text-gray-700 hover:text-blue-600"
+                }`}
               >
                 Flights
               </Link>
-              <a href="#" className="text-gray-700 hover:text-blue-600 font-medium text-sm lg:text-base">
+              <a
+                href="#"
+                className="text-gray-700 hover:text-blue-600 font-medium text-sm lg:text-base"
+              >
                 Hotels
               </a>
-              <a href="#" className="text-gray-700 hover:text-blue-600 font-medium text-sm lg:text-base">
+              <a
+                href="#"
+                className="text-gray-700 hover:text-blue-600 font-medium text-sm lg:text-base"
+              >
                 Cars
               </a>
             </nav>
@@ -131,24 +152,20 @@ export function Navigation({ variant = "aerobooking" }: NavigationProps) {
                 <span className="hidden sm:inline">Connect Wallet</span>
                 <span className="sm:hidden">Connect</span>
               </Button>
-              {pathname === "/checkout" && (
-                <Badge variant="outline" className="text-blue-600 border-blue-200 text-xs hidden sm:inline-flex">
-                  Step 2 of 2
-                </Badge>
-              )}
               <Link href="/donar-facil" className="hidden sm:block">
-                <Button variant="ghost" size="sm" className="text-emerald-600 hover:text-emerald-700">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-emerald-600 hover:text-emerald-700"
+                >
                   <HeartIcon className="h-4 w-4 mr-1" />
                   DonaFacil
                 </Button>
               </Link>
-              <a href="#" className="text-gray-700 hover:text-blue-600 font-medium text-xs sm:text-sm hidden lg:block">
-                My Account
-              </a>
             </div>
           </div>
         </div>
       </div>
     </header>
-  )
+  );
 }
