@@ -2,17 +2,20 @@
 
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import { PlaneIcon, HeartIcon, LogOutIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useDonation } from "@/contexts/donation-context";
+import { useProvider } from "@/providers/Provider";
+import { walletService } from "@/services/wallet.service";
+import { shortenAddress } from "@/utils/shorten-address";
 
 interface NavigationProps {
   variant?: "aerobooking" | "donar-facil";
 }
 
 export function Navigation({ variant = "aerobooking" }: NavigationProps) {
+  const { currentAccount, setCurrentAccount } = useProvider();
   const pathname = usePathname();
   const { user, isLoggedIn, logout, login } = useDonation();
 
@@ -24,8 +27,15 @@ export function Navigation({ variant = "aerobooking" }: NavigationProps) {
     });
   };
 
-  const handleConnectWallet = () => {
-    alert("Connect Wallet clicked!");
+  const handleConnectWallet = async () => {
+    try {
+      const address = await walletService.connect();
+      console.log("Connected wallet address:", address);
+      localStorage.setItem("wallet", address);
+      setCurrentAccount(address);
+    } catch (error) {
+      console.error("Error connecting wallet:", error);
+    }
   };
 
   if (variant === "donar-facil") {
@@ -39,7 +49,7 @@ export function Navigation({ variant = "aerobooking" }: NavigationProps) {
               </div>
               <div>
                 <span className="text-2xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
-                  DonaFacil {/* kept brand name as is */}
+                  EasyGive {/* kept brand name as is */}
                 </span>
                 <p className="text-xs text-gray-600">Blockchain transparency</p>{" "}
                 {/* translated tagline */}
@@ -149,8 +159,14 @@ export function Navigation({ variant = "aerobooking" }: NavigationProps) {
                 size="sm"
                 className="text-blue-600 border-blue-200 hover:bg-blue-50 bg-transparent text-xs sm:text-sm px-2 sm:px-3"
               >
-                <span className="hidden sm:inline">Connect Wallet</span>
-                <span className="sm:hidden">Connect</span>
+                <span className="hidden sm:inline">
+                  {currentAccount
+                    ? shortenAddress(currentAccount)
+                    : "Connect wallet"}
+                </span>
+                <span className="sm:hidden">
+                  {currentAccount ? shortenAddress(currentAccount) : "Connect"}
+                </span>
               </Button>
               <Link href="/donar-facil" className="hidden sm:block">
                 <Button
@@ -159,7 +175,7 @@ export function Navigation({ variant = "aerobooking" }: NavigationProps) {
                   className="text-emerald-600 hover:text-emerald-700"
                 >
                   <HeartIcon className="h-4 w-4 mr-1" />
-                  DonaFacil
+                  EasyGive
                 </Button>
               </Link>
             </div>

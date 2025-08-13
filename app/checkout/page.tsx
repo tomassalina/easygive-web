@@ -1,15 +1,20 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { useSearchParams, useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { Separator } from "@/components/ui/separator"
-import { Badge } from "@/components/ui/badge"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { useState, useEffect } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Separator } from "@/components/ui/separator";
+import { Badge } from "@/components/ui/badge";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import {
   PlaneIcon,
   CreditCardIcon,
@@ -21,11 +26,15 @@ import {
   DropletIcon,
   UsersIcon,
   ShieldCheckIcon,
-} from "lucide-react"
-import Link from "next/link"
-import { Navigation } from "@/components/navigation"
-import { useDonation } from "@/contexts/donation-context"
-import Image from "next/image"
+} from "lucide-react";
+import Link from "next/link";
+import { Navigation } from "@/components/navigation";
+import { useDonation } from "@/contexts/donation-context";
+import Image from "next/image";
+import { stellarService } from "@/services/stellar.service";
+import { useProvider } from "@/providers/Provider";
+import { walletService } from "@/services/wallet.service";
+import { ICrowdfundingContract } from "@/interfaces/contract.interface";
 
 const flights = [
   {
@@ -64,72 +73,104 @@ const flights = [
     stops: "Direct", // translated to English
     date: "15 Mar 2024",
   },
-]
+];
 
 export default function CheckoutPage() {
-  const searchParams = useSearchParams()
-  const router = useRouter()
-  const { addDonation } = useDonation()
-  const flightId = searchParams.get("flight")
-  const [selectedFlight, setSelectedFlight] = useState<any>(null)
-  const [donationOption, setDonationOption] = useState("yes")
-  const [showDonationModal, setShowDonationModal] = useState(false)
+  const { currentAccount, setHashId } = useProvider();
+  console.log(currentAccount);
+  const campaignAddress =
+    "GBAPH22BDWNPPKY3Q7PUS2EY34TPRWJ53OGYKGZ55TSCQBGTQZ2AW66V";
+  const amount = 500;
+
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const { addDonation } = useDonation();
+  const flightId = searchParams.get("flight");
+  const [selectedFlight, setSelectedFlight] = useState<any>(null);
+  const [donationOption, setDonationOption] = useState("yes");
+  const [showDonationModal, setShowDonationModal] = useState(false);
   const [passengerInfo, setPassengerInfo] = useState({
     firstName: "",
     lastName: "",
     email: "",
     phone: "",
-  })
+  });
 
   const arsToXlm = (arsAmount: number) => {
     // Conversion rate: 1 XLM ≈ 2500 ARS (fictional rate for demo)
-    const xlmAmount = arsAmount / 2500
-    return xlmAmount.toFixed(2)
-  }
+    const xlmAmount = arsAmount / 2500;
+    return xlmAmount.toFixed(2);
+  };
 
   useEffect(() => {
     if (flightId) {
-      const flight = flights.find((f) => f.id === Number.parseInt(flightId))
-      setSelectedFlight(flight)
+      const flight = flights.find((f) => f.id === Number.parseInt(flightId));
+      setSelectedFlight(flight);
     }
-  }, [flightId])
+  }, [flightId]);
 
   const handleDonationChange = (value: string) => {
     if (value === "no" && donationOption === "yes") {
-      setShowDonationModal(true)
+      setShowDonationModal(true);
     } else {
-      setDonationOption(value)
+      setDonationOption(value);
     }
-  }
+  };
 
   const confirmNoDonation = () => {
-    setDonationOption("no")
-    setShowDonationModal(false)
-  }
+    setDonationOption("no");
+    setShowDonationModal(false);
+  };
 
   const keepDonation = () => {
-    setDonationOption("yes")
-    setShowDonationModal(false)
-  }
+    setDonationOption("yes");
+    setShowDonationModal(false);
+  };
 
   const handlePayment = () => {
-    alert("Confirm and pay button clicked!")
+    alert("Confirm and pay button clicked!");
 
     if (donationOption === "yes" && selectedFlight) {
       addDonation({
         amount: donationAmount,
         service: `${selectedFlight.airline} - Flight ${selectedFlight.from} → ${selectedFlight.to}`, // translated service name
         cause: "Clean Water Foundation", // translated cause name
-      })
+      });
     }
     // Simulate payment success
     alert(
       "Payment processed successfully with XLM! Thank you for your purchase" + // translated success message
         (donationOption === "yes" ? " and your donation" : "") +
-        ".",
-    )
-    router.push("/")
-  }
+        "."
+    );
+    router.push("/");
+  };
+
+  const handleAddContribute = async () => {
+    const contractClient =
+      await stellarService.buildClient<ICrowdfundingContract>(currentAccount);
+
+    const xdr = (
+      await contractClient.contribute({
+        contributor: currentAccount,
+        campaign_address: campaignAddress,
+        amount,
+      })
+    ).toXDR();
+
+    const signedTx = await walletService.signTransaction(xdr);
+
+    const hashId = await stellarService.submitTransaction(signedTx.signedTxXdr);
+
+    setHashId(hashId);
+
+    alert(
+      "Payment processed successfully with XLM! Thank you for your purchase" + // translated success message
+        (donationOption === "yes" ? " and your donation" : "") +
+        "."
+    );
+    router.push("/");
+  };
 
   if (!selectedFlight) {
     return (
@@ -138,9 +179,13 @@ export default function CheckoutPage() {
         <div className="flex items-center justify-center min-h-[calc(100vh-4rem)]">
           <div className="text-center">
             <PlaneIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-            <h2 className="text-xl font-semibold text-gray-900 mb-2">Flight not found</h2>{" "}
+            <h2 className="text-xl font-semibold text-gray-900 mb-2">
+              Flight not found
+            </h2>{" "}
             {/* translated error message */}
-            <p className="text-gray-600 mb-4">The selected flight is not available.</p>{" "}
+            <p className="text-gray-600 mb-4">
+              The selected flight is not available.
+            </p>{" "}
             {/* translated error description */}
             <Link href="/">
               <Button>Back to home</Button> {/* translated button text */}
@@ -148,13 +193,14 @@ export default function CheckoutPage() {
           </div>
         </div>
       </div>
-    )
+    );
   }
 
-  const donationAmount = Math.round(selectedFlight.price * 0.03)
-  const subtotal = selectedFlight.price
-  const taxes = Math.round(selectedFlight.price * 0.21)
-  const total = subtotal + taxes + (donationOption === "yes" ? donationAmount : 0)
+  const donationAmount = Math.round(selectedFlight.price * 0.03);
+  const subtotal = selectedFlight.price;
+  const taxes = Math.round(selectedFlight.price * 0.21);
+  const total =
+    subtotal + taxes + (donationOption === "yes" ? donationAmount : 0);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -177,32 +223,41 @@ export default function CheckoutPage() {
                 <div className="text-xl sm:text-2xl font-bold text-blue-600 mb-1">
                   ARS ${donationAmount.toLocaleString()}
                 </div>
-                <div className="text-xs sm:text-sm text-gray-600">= 30 days of clean water for 1 child</div>
+                <div className="text-xs sm:text-sm text-gray-600">
+                  = 30 days of clean water for 1 child
+                </div>
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-2 sm:gap-3 text-center">
               <div className="bg-white p-2 sm:p-3 rounded-lg border">
                 <UsersIcon className="h-4 sm:h-5 w-4 sm:w-5 text-green-600 mx-auto mb-1" />
-                <div className="text-base sm:text-lg font-bold text-gray-900">2,847</div>
+                <div className="text-base sm:text-lg font-bold text-gray-900">
+                  2,847
+                </div>
                 <div className="text-xs text-gray-600">people helped today</div>
               </div>
               <div className="bg-white p-2 sm:p-3 rounded-lg border">
                 <ShieldCheckIcon className="h-4 sm:h-5 w-4 sm:w-5 text-blue-600 mx-auto mb-1" />
-                <div className="text-base sm:text-lg font-bold text-gray-900">100%</div>
+                <div className="text-base sm:text-lg font-bold text-gray-900">
+                  100%
+                </div>
                 <div className="text-xs text-gray-600">blockchain verified</div>
               </div>
             </div>
 
             <div className="bg-yellow-50 p-3 rounded-lg border border-yellow-200">
               <p className="text-sm text-yellow-800 text-center">
-                <strong>🏆 Join 12,000+ donors</strong> who've made a difference with complete transparency on Stellar
-                blockchain
+                <strong>🏆 Join 12,000+ donors</strong> who've made a difference
+                with complete transparency on Stellar blockchain
               </p>
             </div>
 
             <div className="flex space-x-2">
-              <Button onClick={keepDonation} className="flex-1 bg-green-600 hover:bg-green-700 text-white">
+              <Button
+                onClick={keepDonation}
+                className="flex-1 bg-green-600 hover:bg-green-700 text-white"
+              >
                 <HeartIcon className="h-4 w-4 mr-2" />
                 Yes, I'll help!
               </Button>
@@ -246,7 +301,12 @@ export default function CheckoutPage() {
                     <Input
                       id="firstName"
                       value={passengerInfo.firstName}
-                      onChange={(e) => setPassengerInfo({ ...passengerInfo, firstName: e.target.value })}
+                      onChange={(e) =>
+                        setPassengerInfo({
+                          ...passengerInfo,
+                          firstName: e.target.value,
+                        })
+                      }
                       placeholder="First Name"
                       className="h-11 sm:h-12"
                     />
@@ -256,7 +316,12 @@ export default function CheckoutPage() {
                     <Input
                       id="lastName"
                       value={passengerInfo.lastName}
-                      onChange={(e) => setPassengerInfo({ ...passengerInfo, lastName: e.target.value })}
+                      onChange={(e) =>
+                        setPassengerInfo({
+                          ...passengerInfo,
+                          lastName: e.target.value,
+                        })
+                      }
                       placeholder="Last Name"
                       className="h-11 sm:h-12"
                     />
@@ -270,7 +335,12 @@ export default function CheckoutPage() {
                       id="email"
                       type="email"
                       value={passengerInfo.email}
-                      onChange={(e) => setPassengerInfo({ ...passengerInfo, email: e.target.value })}
+                      onChange={(e) =>
+                        setPassengerInfo({
+                          ...passengerInfo,
+                          email: e.target.value,
+                        })
+                      }
                       className="pl-10 h-11 sm:h-12"
                       placeholder="your@email.com"
                     />
@@ -283,7 +353,12 @@ export default function CheckoutPage() {
                     <Input
                       id="phone"
                       value={passengerInfo.phone}
-                      onChange={(e) => setPassengerInfo({ ...passengerInfo, phone: e.target.value })}
+                      onChange={(e) =>
+                        setPassengerInfo({
+                          ...passengerInfo,
+                          phone: e.target.value,
+                        })
+                      }
                       className="pl-10 h-11 sm:h-12"
                       placeholder="+54 11 0000 0000"
                     />
@@ -305,8 +380,8 @@ export default function CheckoutPage() {
                     <strong>Secure payment with Stellar blockchain</strong>
                   </p>
                   <p className="text-xs text-blue-600">
-                    Your transaction will be processed on the Stellar network (XLM) ensuring complete transparency and
-                    traceability.
+                    Your transaction will be processed on the Stellar network
+                    (XLM) ensuring complete transparency and traceability.
                   </p>
                 </div>
                 <div className="space-y-2">
@@ -319,7 +394,11 @@ export default function CheckoutPage() {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="memo">Memo (optional)</Label>
-                  <Input id="memo" placeholder="Transaction memo" className="h-11 sm:h-12" />
+                  <Input
+                    id="memo"
+                    placeholder="Transaction memo"
+                    className="h-11 sm:h-12"
+                  />
                 </div>
               </CardContent>
             </Card>
@@ -330,13 +409,19 @@ export default function CheckoutPage() {
             {/* Flight Summary */}
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg sm:text-xl">Flight Summary</CardTitle>
+                <CardTitle className="text-lg sm:text-xl">
+                  Flight Summary
+                </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex justify-between items-start">
                   <div>
-                    <h3 className="font-semibold text-base sm:text-lg">{selectedFlight.airline}</h3>
-                    <p className="text-sm text-gray-600">{selectedFlight.date}</p>
+                    <h3 className="font-semibold text-base sm:text-lg">
+                      {selectedFlight.airline}
+                    </h3>
+                    <p className="text-sm text-gray-600">
+                      {selectedFlight.date}
+                    </p>
                   </div>
                   <Badge variant="secondary" className="text-xs">
                     {selectedFlight.stops}
@@ -344,16 +429,26 @@ export default function CheckoutPage() {
                 </div>
                 <div className="flex items-center justify-between">
                   <div className="text-center">
-                    <div className="text-lg sm:text-xl font-bold">{selectedFlight.departure}</div>
-                    <div className="text-xs sm:text-sm text-gray-500">{selectedFlight.from}</div>
+                    <div className="text-lg sm:text-xl font-bold">
+                      {selectedFlight.departure}
+                    </div>
+                    <div className="text-xs sm:text-sm text-gray-500">
+                      {selectedFlight.from}
+                    </div>
                   </div>
                   <div className="flex-1 text-center px-2">
-                    <div className="text-xs sm:text-sm text-gray-500">{selectedFlight.duration}</div>
+                    <div className="text-xs sm:text-sm text-gray-500">
+                      {selectedFlight.duration}
+                    </div>
                     <div className="h-px bg-gray-300 my-2"></div>
                   </div>
                   <div className="text-center">
-                    <div className="text-lg sm:text-xl font-bold">{selectedFlight.arrival}</div>
-                    <div className="text-xs sm:text-sm text-gray-500">{selectedFlight.to}</div>
+                    <div className="text-lg sm:text-xl font-bold">
+                      {selectedFlight.arrival}
+                    </div>
+                    <div className="text-xs sm:text-sm text-gray-500">
+                      {selectedFlight.to}
+                    </div>
                   </div>
                 </div>
               </CardContent>
@@ -362,21 +457,31 @@ export default function CheckoutPage() {
             {/* Price Summary with Integrated Donation */}
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg sm:text-xl">Price Summary</CardTitle>
+                <CardTitle className="text-lg sm:text-xl">
+                  Price Summary
+                </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
                 <div className="flex justify-between">
                   <span className="text-sm sm:text-base">Subtotal</span>
                   <div className="text-right">
-                    <span className="text-sm sm:text-base">ARS ${subtotal.toLocaleString()}</span>
-                    <div className="text-xs text-gray-500">{arsToXlm(subtotal)} XLM</div>
+                    <span className="text-sm sm:text-base">
+                      ARS ${subtotal.toLocaleString()}
+                    </span>
+                    <div className="text-xs text-gray-500">
+                      {arsToXlm(subtotal)} XLM
+                    </div>
                   </div>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-sm sm:text-base">Taxes and fees</span>
                   <div className="text-right">
-                    <span className="text-sm sm:text-base">ARS ${taxes.toLocaleString()}</span>
-                    <div className="text-xs text-gray-500">{arsToXlm(taxes)} XLM</div>
+                    <span className="text-sm sm:text-base">
+                      ARS ${taxes.toLocaleString()}
+                    </span>
+                    <div className="text-xs text-gray-500">
+                      {arsToXlm(taxes)} XLM
+                    </div>
                   </div>
                 </div>
 
@@ -393,17 +498,38 @@ export default function CheckoutPage() {
                       <HeartIcon className="h-3 sm:h-4 w-3 sm:w-4 text-green-600 flex-shrink-0" />
                     </div>
                     <div className="flex-1">
-                      <p className="text-xs sm:text-sm font-medium text-gray-900 mb-2">Help with your purchase</p>
-                      <RadioGroup value={donationOption} onValueChange={handleDonationChange} className="space-y-2">
+                      <p className="text-xs sm:text-sm font-medium text-gray-900 mb-2">
+                        Help with your purchase
+                      </p>
+                      <RadioGroup
+                        value={donationOption}
+                        onValueChange={handleDonationChange}
+                        className="space-y-2"
+                      >
                         <div className="flex items-start space-x-2">
-                          <RadioGroupItem value="yes" id="donate-yes" className="mt-0.5" />
-                          <Label htmlFor="donate-yes" className="text-xs sm:text-sm cursor-pointer leading-relaxed">
-                            Yes, donate ARS ${donationAmount.toLocaleString()} to a good cause
+                          <RadioGroupItem
+                            value="yes"
+                            id="donate-yes"
+                            className="mt-0.5"
+                          />
+                          <Label
+                            htmlFor="donate-yes"
+                            className="text-xs sm:text-sm cursor-pointer leading-relaxed"
+                          >
+                            Yes, donate ARS ${donationAmount.toLocaleString()}{" "}
+                            to a good cause
                           </Label>
                         </div>
                         <div className="flex items-start space-x-2">
-                          <RadioGroupItem value="no" id="donate-no" className="mt-0.5" />
-                          <Label htmlFor="donate-no" className="text-xs sm:text-sm cursor-pointer leading-relaxed">
+                          <RadioGroupItem
+                            value="no"
+                            id="donate-no"
+                            className="mt-0.5"
+                          />
+                          <Label
+                            htmlFor="donate-no"
+                            className="text-xs sm:text-sm cursor-pointer leading-relaxed"
+                          >
                             Don't donate this time
                           </Label>
                         </div>
@@ -411,8 +537,10 @@ export default function CheckoutPage() {
                       {donationOption === "yes" && (
                         <div className="mt-2 text-xs text-gray-600">
                           <p className="mb-1 leading-relaxed">
-                            Your donation will help <strong>Clean Water Foundation</strong> provide access to clean
-                            water. 100% transparent traceability on Stellar blockchain.
+                            Your donation will help{" "}
+                            <strong>Clean Water Foundation</strong> provide
+                            access to clean water. 100% transparent traceability
+                            on Stellar blockchain.
                           </p>
                           <Link
                             href="/donar-facil"
@@ -431,8 +559,12 @@ export default function CheckoutPage() {
                   <div className="flex justify-between text-green-600">
                     <span className="text-sm sm:text-base">Donation</span>
                     <div className="text-right">
-                      <span className="text-sm sm:text-base">ARS ${donationAmount.toLocaleString()}</span>
-                      <div className="text-xs text-green-500">{arsToXlm(donationAmount)} XLM</div>
+                      <span className="text-sm sm:text-base">
+                        ARS ${donationAmount.toLocaleString()}
+                      </span>
+                      <div className="text-xs text-green-500">
+                        {arsToXlm(donationAmount)} XLM
+                      </div>
                     </div>
                   </div>
                 )}
@@ -442,17 +574,20 @@ export default function CheckoutPage() {
                   <span>Total</span>
                   <div className="text-right">
                     <span>ARS ${total.toLocaleString()}</span>
-                    <div className="text-xs sm:text-sm text-gray-600 font-normal">{arsToXlm(total)} XLM</div>
+                    <div className="text-xs sm:text-sm text-gray-600 font-normal">
+                      {arsToXlm(total)} XLM
+                    </div>
                   </div>
                 </div>
                 <Button
-                  onClick={handlePayment}
+                  onClick={handleAddContribute}
                   className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 mt-4 text-sm sm:text-base"
                 >
                   Confirm and pay ARS ${total.toLocaleString()}
                 </Button>
                 <p className="text-xs text-gray-500 text-center mt-2 leading-relaxed">
-                  By confirming, you accept our terms and conditions. Transaction processed on Stellar network (XLM).
+                  By confirming, you accept our terms and conditions.
+                  Transaction processed on Stellar network (XLM).
                 </p>
               </CardContent>
             </Card>
@@ -460,5 +595,5 @@ export default function CheckoutPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

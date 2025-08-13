@@ -1,8 +1,8 @@
-"use client"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Progress } from "@/components/ui/progress"
+"use client";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
 import {
   DropletIcon,
   UsersIcon,
@@ -13,9 +13,9 @@ import {
   CheckCircleIcon,
   TruckIcon,
   PackageIcon,
-} from "lucide-react"
-import { Navigation } from "@/components/navigation"
-import { useDonation } from "@/contexts/donation-context"
+} from "lucide-react";
+import { Navigation } from "@/components/navigation";
+import { useDonation } from "@/contexts/donation-context";
 
 // Company logos for donation history
 const companyLogos = {
@@ -26,24 +26,24 @@ const companyLogos = {
   "StellarJet Flight": "https://logo.clearbit.com/jetblue.com",
   "Amazon Prime": "https://logo.clearbit.com/amazon.com",
   Uber: "https://logo.clearbit.com/uber.com",
-}
+};
 
-export default function DonarFacilPage() {
-  const { user, isLoggedIn, donations, totalDonated, login } = useDonation()
+export default function EasyGivePage() {
+  const { isLoggedIn, totalDonated, login } = useDonation();
 
   const handleGoogleLogin = () => {
     login({
       name: "María González",
       email: "maria.gonzalez@gmail.com",
       avatar: "/woman-profile.png",
-    })
-  }
+    });
+  };
 
   const impactMetrics = {
     peopleHelped: Math.floor(totalDonated * 12),
     waterLiters: Math.floor(totalDonated * 500),
     communities: Math.floor(totalDonated / 10),
-  }
+  };
 
   // Enhanced donation history with recurring donations and traceability
   const enhancedDonations = [
@@ -58,15 +58,51 @@ export default function DonarFacilPage() {
       recurring: true,
       monthsActive: 7,
       totalDonated: 111.93,
-      blockHash: "0x4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6",
+      blockHash:
+        "0x4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6",
       traceability: [
-        { step: "Donation Initiated", date: "2024-01-15", status: "completed", location: "Buenos Aires, AR" },
-        { step: "Funds Collected", date: "2024-01-16", status: "completed", location: "DonaFacil HQ" },
-        { step: "Partner Transfer", date: "2024-01-18", status: "completed", location: "Clean Water Foundation" },
-        { step: "Project Allocation", date: "2024-01-20", status: "completed", location: "Salta Province, AR" },
-        { step: "Equipment Purchase", date: "2024-01-25", status: "completed", location: "Local Supplier" },
-        { step: "Installation", date: "2024-02-01", status: "in-progress", location: "Rural Community #47" },
-        { step: "Impact Verification", date: "2024-02-15", status: "pending", location: "Field Team" },
+        {
+          step: "Donation Initiated",
+          date: "2024-01-15",
+          status: "completed",
+          location: "Buenos Aires, AR",
+        },
+        {
+          step: "Funds Collected",
+          date: "2024-01-16",
+          status: "completed",
+          location: "DonaFacil HQ",
+        },
+        {
+          step: "Partner Transfer",
+          date: "2024-01-18",
+          status: "completed",
+          location: "Clean Water Foundation",
+        },
+        {
+          step: "Project Allocation",
+          date: "2024-01-20",
+          status: "completed",
+          location: "Salta Province, AR",
+        },
+        {
+          step: "Equipment Purchase",
+          date: "2024-01-25",
+          status: "completed",
+          location: "Local Supplier",
+        },
+        {
+          step: "Installation",
+          date: "2024-02-01",
+          status: "in-progress",
+          location: "Rural Community #47",
+        },
+        {
+          step: "Impact Verification",
+          date: "2024-02-15",
+          status: "pending",
+          location: "Field Team",
+        },
       ],
     },
     {
@@ -78,12 +114,33 @@ export default function DonarFacilPage() {
       date: "2024-03-10",
       status: "Processing",
       recurring: false,
-      blockHash: "0x5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7",
+      blockHash:
+        "0x5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7",
       traceability: [
-        { step: "Donation Initiated", date: "2024-03-10", status: "completed", location: "Buenos Aires, AR" },
-        { step: "Funds Collected", date: "2024-03-11", status: "completed", location: "DonaFacil HQ" },
-        { step: "Partner Transfer", date: "2024-03-12", status: "in-progress", location: "Clean Water Foundation" },
-        { step: "Project Allocation", date: "", status: "pending", location: "TBD" },
+        {
+          step: "Donation Initiated",
+          date: "2024-03-10",
+          status: "completed",
+          location: "Buenos Aires, AR",
+        },
+        {
+          step: "Funds Collected",
+          date: "2024-03-11",
+          status: "completed",
+          location: "DonaFacil HQ",
+        },
+        {
+          step: "Partner Transfer",
+          date: "2024-03-12",
+          status: "in-progress",
+          location: "Clean Water Foundation",
+        },
+        {
+          step: "Project Allocation",
+          date: "",
+          status: "pending",
+          location: "TBD",
+        },
       ],
     },
     {
@@ -97,18 +154,54 @@ export default function DonarFacilPage() {
       recurring: true,
       monthsActive: 5,
       totalDonated: 49.95,
-      blockHash: "0x6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8",
+      blockHash:
+        "0x6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8",
       traceability: [
-        { step: "Donation Initiated", date: "2024-02-01", status: "completed", location: "Buenos Aires, AR" },
-        { step: "Funds Collected", date: "2024-02-02", status: "completed", location: "DonaFacil HQ" },
-        { step: "Partner Transfer", date: "2024-02-05", status: "completed", location: "Education for All" },
-        { step: "School Selection", date: "2024-02-10", status: "completed", location: "Mendoza Province, AR" },
-        { step: "Materials Purchase", date: "2024-02-15", status: "completed", location: "Educational Supplies Co." },
-        { step: "Delivery", date: "2024-02-20", status: "completed", location: "Rural School #23" },
-        { step: "Impact Report", date: "2024-02-28", status: "completed", location: "Field Team" },
+        {
+          step: "Donation Initiated",
+          date: "2024-02-01",
+          status: "completed",
+          location: "Buenos Aires, AR",
+        },
+        {
+          step: "Funds Collected",
+          date: "2024-02-02",
+          status: "completed",
+          location: "DonaFacil HQ",
+        },
+        {
+          step: "Partner Transfer",
+          date: "2024-02-05",
+          status: "completed",
+          location: "Education for All",
+        },
+        {
+          step: "School Selection",
+          date: "2024-02-10",
+          status: "completed",
+          location: "Mendoza Province, AR",
+        },
+        {
+          step: "Materials Purchase",
+          date: "2024-02-15",
+          status: "completed",
+          location: "Educational Supplies Co.",
+        },
+        {
+          step: "Delivery",
+          date: "2024-02-20",
+          status: "completed",
+          location: "Rural School #23",
+        },
+        {
+          step: "Impact Report",
+          date: "2024-02-28",
+          status: "completed",
+          location: "Field Team",
+        },
       ],
     },
-  ]
+  ];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50">
@@ -131,8 +224,9 @@ export default function DonarFacilPage() {
                 </span>
               </h1>
               <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                Turn your daily purchases into automatic donations. Every peso counts, every transaction is transparent,
-                every donation has real and verifiable impact.
+                Turn your daily purchases into automatic donations. Every sense
+                counts, every transaction is transparent, every donation has
+                real and verifiable impact.
               </p>
             </div>
 
@@ -146,9 +240,13 @@ export default function DonarFacilPage() {
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                 <div className="absolute bottom-4 left-4 text-white">
-                  <Badge className="bg-emerald-500 text-white mb-2">Active Cause</Badge>
+                  <Badge className="bg-emerald-500 text-white mb-2">
+                    Active Cause
+                  </Badge>
                   <h2 className="text-2xl font-bold">Clean Water Foundation</h2>
-                  <p className="text-emerald-100">Access to clean water in rural communities</p>
+                  <p className="text-emerald-100">
+                    Access to clean water in rural communities
+                  </p>
                 </div>
               </div>
               <CardContent className="p-6">
@@ -158,21 +256,29 @@ export default function DonarFacilPage() {
                       <DropletIcon className="h-6 w-6 text-blue-600" />
                     </div>
                     <div className="text-2xl font-bold text-gray-900">2.1M</div>
-                    <div className="text-sm text-gray-600">Liters of clean water</div>
+                    <div className="text-sm text-gray-600">
+                      Liters of clean water
+                    </div>
                   </div>
                   <div className="text-center">
                     <div className="bg-emerald-100 p-3 rounded-full w-fit mx-auto mb-2">
                       <UsersIcon className="h-6 w-6 text-emerald-600" />
                     </div>
-                    <div className="text-2xl font-bold text-gray-900">4,200</div>
-                    <div className="text-sm text-gray-600">People benefited</div>
+                    <div className="text-2xl font-bold text-gray-900">
+                      4,200
+                    </div>
+                    <div className="text-sm text-gray-600">
+                      People benefited
+                    </div>
                   </div>
                   <div className="text-center">
                     <div className="bg-teal-100 p-3 rounded-full w-fit mx-auto mb-2">
                       <MapPinIcon className="h-6 w-6 text-teal-600" />
                     </div>
                     <div className="text-2xl font-bold text-gray-900">23</div>
-                    <div className="text-sm text-gray-600">Communities reached</div>
+                    <div className="text-sm text-gray-600">
+                      Communities reached
+                    </div>
                   </div>
                 </div>
                 <div className="space-y-3">
@@ -182,7 +288,8 @@ export default function DonarFacilPage() {
                   </div>
                   <Progress value={78} className="h-2" />
                   <p className="text-sm text-gray-600">
-                    $12,450 USD needed to complete purification system installation in 5 more communities.
+                    $12,450 USD needed to complete purification system
+                    installation in 5 more communities.
                   </p>
                 </div>
               </CardContent>
@@ -195,24 +302,33 @@ export default function DonarFacilPage() {
                   <span className="text-2xl font-bold text-white">1</span>
                 </div>
                 <h3 className="text-xl font-semibold mb-2">Normal Purchase</h3>
-                <p className="text-gray-600">Make your usual purchases on any platform integrated with our system.</p>
+                <p className="text-gray-600">
+                  Make your usual purchases on any platform integrated with our
+                  system.
+                </p>
               </Card>
               <Card className="text-center p-6">
                 <div className="bg-gradient-to-r from-emerald-500 to-emerald-600 p-4 rounded-full w-fit mx-auto mb-4">
                   <span className="text-2xl font-bold text-white">2</span>
                 </div>
-                <h3 className="text-xl font-semibold mb-2">Automatic Donation</h3>
+                <h3 className="text-xl font-semibold mb-2">
+                  Automatic Donation
+                </h3>
                 <p className="text-gray-600">
-                  A small percentage automatically goes to the active cause (you can opt out).
+                  A small percentage automatically goes to the active cause (you
+                  can opt out).
                 </p>
               </Card>
               <Card className="text-center p-6">
                 <div className="bg-gradient-to-r from-teal-500 to-teal-600 p-4 rounded-full w-fit mx-auto mb-4">
                   <span className="text-2xl font-bold text-white">3</span>
                 </div>
-                <h3 className="text-xl font-semibold mb-2">Verifiable Impact</h3>
+                <h3 className="text-xl font-semibold mb-2">
+                  Verifiable Impact
+                </h3>
                 <p className="text-gray-600">
-                  Every donation is recorded on blockchain for maximum transparency and traceability.
+                  Every donation is recorded on blockchain for maximum
+                  transparency and traceability.
                 </p>
               </Card>
             </div>
@@ -245,7 +361,8 @@ export default function DonarFacilPage() {
                 View My Personal Impact
               </Button>
               <p className="text-sm text-gray-500 mt-2">
-                Sign in to see all your donations and their blockchain traceability
+                Sign in to see all your donations and their blockchain
+                traceability
               </p>
             </div>
           </div>
@@ -258,8 +375,12 @@ export default function DonarFacilPage() {
                 <CardContent className="p-4 sm:p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-emerald-100 text-xs sm:text-sm">Total Donated</p>
-                      <p className="text-2xl sm:text-3xl font-bold">${totalDonated.toFixed(2)}</p>
+                      <p className="text-emerald-100 text-xs sm:text-sm">
+                        Total Donated
+                      </p>
+                      <p className="text-2xl sm:text-3xl font-bold">
+                        ${totalDonated.toFixed(2)}
+                      </p>
                     </div>
                     <TrendingUpIcon className="h-6 sm:h-8 w-6 sm:w-8 text-emerald-200" />
                   </div>
@@ -269,8 +390,12 @@ export default function DonarFacilPage() {
                 <CardContent className="p-4 sm:p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-gray-600 text-xs sm:text-sm">People Helped</p>
-                      <p className="text-2xl sm:text-3xl font-bold text-blue-600">{impactMetrics.peopleHelped}</p>
+                      <p className="text-gray-600 text-xs sm:text-sm">
+                        People Helped
+                      </p>
+                      <p className="text-2xl sm:text-3xl font-bold text-blue-600">
+                        {impactMetrics.peopleHelped}
+                      </p>
                     </div>
                     <UsersIcon className="h-6 sm:h-8 w-6 sm:w-8 text-blue-500" />
                   </div>
@@ -280,7 +405,9 @@ export default function DonarFacilPage() {
                 <CardContent className="p-4 sm:p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-gray-600 text-xs sm:text-sm">Liters of Water</p>
+                      <p className="text-gray-600 text-xs sm:text-sm">
+                        Liters of Water
+                      </p>
                       <p className="text-2xl sm:text-3xl font-bold text-cyan-600">
                         {impactMetrics.waterLiters.toLocaleString()}
                       </p>
@@ -293,8 +420,12 @@ export default function DonarFacilPage() {
                 <CardContent className="p-4 sm:p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-gray-600 text-xs sm:text-sm">Communities</p>
-                      <p className="text-2xl sm:text-3xl font-bold text-teal-600">{impactMetrics.communities}</p>
+                      <p className="text-gray-600 text-xs sm:text-sm">
+                        Communities
+                      </p>
+                      <p className="text-2xl sm:text-3xl font-bold text-teal-600">
+                        {impactMetrics.communities}
+                      </p>
                     </div>
                     <MapPinIcon className="h-6 sm:h-8 w-6 sm:w-8 text-teal-500" />
                   </div>
@@ -313,31 +444,47 @@ export default function DonarFacilPage() {
               <CardContent>
                 <div className="space-y-6">
                   {enhancedDonations.map((donation) => (
-                    <div key={donation.id} className="border rounded-lg p-6 hover:bg-gray-50 transition-colors">
+                    <div
+                      key={donation.id}
+                      className="border rounded-lg p-6 hover:bg-gray-50 transition-colors"
+                    >
                       {/* Company Header */}
                       <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center space-x-4">
                           <img
-                            src={companyLogos[donation.company] || "/placeholder.svg?height=40&width=40"}
+                            src={
+                              companyLogos[donation.company] ||
+                              "/placeholder.svg?height=40&width=40"
+                            }
                             alt={donation.company}
                             className="w-10 h-10 rounded-lg object-contain bg-white border"
                           />
                           <div>
-                            <h3 className="font-semibold text-gray-900">{donation.company}</h3>
-                            <p className="text-sm text-gray-600">{donation.service}</p>
+                            <h3 className="font-semibold text-gray-900">
+                              {donation.company}
+                            </h3>
+                            <p className="text-sm text-gray-600">
+                              {donation.service}
+                            </p>
                             {donation.recurring && (
                               <p className="text-xs text-blue-600">
-                                Monthly • Active for {donation.monthsActive} months
+                                Monthly • Active for {donation.monthsActive}{" "}
+                                months
                               </p>
                             )}
                           </div>
                         </div>
                         <div className="text-right">
                           <div className="text-lg font-bold text-emerald-600">
-                            ${donation.recurring ? donation.totalDonated.toFixed(2) : donation.amount.toFixed(2)}
+                            $
+                            {donation.recurring
+                              ? donation.totalDonated.toFixed(2)
+                              : donation.amount.toFixed(2)}
                           </div>
                           {donation.recurring && (
-                            <div className="text-sm text-gray-500">${donation.amount.toFixed(2)}/month</div>
+                            <div className="text-sm text-gray-500">
+                              ${donation.amount.toFixed(2)}/month
+                            </div>
                           )}
                           <Badge
                             variant="secondary"
@@ -345,8 +492,8 @@ export default function DonarFacilPage() {
                               donation.status === "Delivered"
                                 ? "bg-green-100 text-green-800"
                                 : donation.status === "Processing"
-                                  ? "bg-yellow-100 text-yellow-800"
-                                  : "bg-blue-100 text-blue-800"
+                                ? "bg-yellow-100 text-yellow-800"
+                                : "bg-blue-100 text-blue-800"
                             }`}
                           >
                             {donation.status}
@@ -358,12 +505,20 @@ export default function DonarFacilPage() {
                       <div className="bg-gray-50 rounded-lg p-4 mb-4">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                           <div>
-                            <span className="font-medium text-gray-700">Cause:</span>
-                            <span className="ml-2 text-gray-600">{donation.cause}</span>
+                            <span className="font-medium text-gray-700">
+                              Cause:
+                            </span>
+                            <span className="ml-2 text-gray-600">
+                              {donation.cause}
+                            </span>
                           </div>
                           <div>
-                            <span className="font-medium text-gray-700">Date:</span>
-                            <span className="ml-2 text-gray-600">{donation.date}</span>
+                            <span className="font-medium text-gray-700">
+                              Date:
+                            </span>
+                            <span className="ml-2 text-gray-600">
+                              {donation.date}
+                            </span>
                           </div>
                         </div>
                       </div>
@@ -377,14 +532,17 @@ export default function DonarFacilPage() {
 
                         <div className="space-y-2">
                           {donation.traceability.map((step, index) => (
-                            <div key={index} className="flex items-center space-x-3">
+                            <div
+                              key={index}
+                              className="flex items-center space-x-3"
+                            >
                               <div
                                 className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-medium ${
                                   step.status === "completed"
                                     ? "bg-green-100 text-green-800"
                                     : step.status === "in-progress"
-                                      ? "bg-yellow-100 text-yellow-800"
-                                      : "bg-gray-100 text-gray-600"
+                                    ? "bg-yellow-100 text-yellow-800"
+                                    : "bg-gray-100 text-gray-600"
                                 }`}
                               >
                                 {step.status === "completed" ? (
@@ -397,10 +555,16 @@ export default function DonarFacilPage() {
                               </div>
                               <div className="flex-1">
                                 <div className="flex items-center justify-between">
-                                  <span className="text-sm font-medium text-gray-900">{step.step}</span>
-                                  <span className="text-xs text-gray-500">{step.date}</span>
+                                  <span className="text-sm font-medium text-gray-900">
+                                    {step.step}
+                                  </span>
+                                  <span className="text-xs text-gray-500">
+                                    {step.date}
+                                  </span>
                                 </div>
-                                <div className="text-xs text-gray-600">{step.location}</div>
+                                <div className="text-xs text-gray-600">
+                                  {step.location}
+                                </div>
                               </div>
                             </div>
                           ))}
@@ -412,7 +576,9 @@ export default function DonarFacilPage() {
                         <div className="flex items-center justify-between text-xs text-gray-500">
                           <div className="flex items-center space-x-4">
                             <span>TX ID: {donation.id.slice(0, 20)}...</span>
-                            <span>Block: {donation.blockHash.slice(0, 20)}...</span>
+                            <span>
+                              Block: {donation.blockHash.slice(0, 20)}...
+                            </span>
                           </div>
                           <button className="text-emerald-600 hover:text-emerald-700 flex items-center space-x-1">
                             <span>View on Stellar</span>
@@ -429,28 +595,38 @@ export default function DonarFacilPage() {
             {/* Achievement Badges */}
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg sm:text-xl">Unlocked Achievements</CardTitle>
+                <CardTitle className="text-lg sm:text-xl">
+                  Unlocked Achievements
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
                   <div className="text-center p-3 sm:p-4 bg-gradient-to-b from-yellow-50 to-yellow-100 rounded-lg border border-yellow-200">
                     <div className="text-2xl sm:text-3xl mb-2">🌟</div>
-                    <p className="font-medium text-xs sm:text-sm">First Donation</p>
+                    <p className="font-medium text-xs sm:text-sm">
+                      First Donation
+                    </p>
                     <p className="text-xs text-gray-600">Unlocked</p>
                   </div>
                   <div className="text-center p-3 sm:p-4 bg-gradient-to-b from-blue-50 to-blue-100 rounded-lg border border-blue-200">
                     <div className="text-2xl sm:text-3xl mb-2">💧</div>
-                    <p className="font-medium text-xs sm:text-sm">Water Guardian</p>
+                    <p className="font-medium text-xs sm:text-sm">
+                      Water Guardian
+                    </p>
                     <p className="text-xs text-gray-600">1000+ liters</p>
                   </div>
                   <div className="text-center p-3 sm:p-4 bg-gradient-to-b from-emerald-50 to-emerald-100 rounded-lg border border-emerald-200">
                     <div className="text-2xl sm:text-3xl mb-2">🤝</div>
-                    <p className="font-medium text-xs sm:text-sm">Consistent Donor</p>
+                    <p className="font-medium text-xs sm:text-sm">
+                      Consistent Donor
+                    </p>
                     <p className="text-xs text-gray-600">4 donations</p>
                   </div>
                   <div className="text-center p-3 sm:p-4 bg-gray-50 rounded-lg border border-gray-200 opacity-60">
                     <div className="text-2xl sm:text-3xl mb-2">🏆</div>
-                    <p className="font-medium text-xs sm:text-sm">Community Hero</p>
+                    <p className="font-medium text-xs sm:text-sm">
+                      Community Hero
+                    </p>
                     <p className="text-xs text-gray-600">$50 to unlock</p>
                   </div>
                 </div>
@@ -460,5 +636,5 @@ export default function DonarFacilPage() {
         )}
       </div>
     </div>
-  )
+  );
 }
