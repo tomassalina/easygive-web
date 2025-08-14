@@ -72,7 +72,7 @@ export default function EasyGivePage() {
           step: "Funds Collected",
           date: "2024-01-16",
           status: "completed",
-          location: "DonaFacil HQ",
+          location: "EasyGive HQ",
         },
         {
           step: "Partner Transfer",
@@ -128,7 +128,7 @@ export default function EasyGivePage() {
           step: "Funds Collected",
           date: "2024-03-11",
           status: "completed",
-          location: "DonaFacil HQ",
+          location: "EasyGive HQ",
         },
         {
           step: "Partner Transfer",
@@ -168,7 +168,7 @@ export default function EasyGivePage() {
           step: "Funds Collected",
           date: "2024-02-02",
           status: "completed",
-          location: "DonaFacil HQ",
+          location: "EasyGive HQ",
         },
         {
           step: "Partner Transfer",

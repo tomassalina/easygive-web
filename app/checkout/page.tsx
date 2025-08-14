@@ -394,7 +394,7 @@ export default function CheckoutPage() {
                 className="text-xs sm:text-sm text-blue-600 hover:text-blue-700 underline"
                 onClick={() => setShowDonationModal(false)}
               >
-                Learn more about DonaFacil →
+                Learn more about EasyGive →
               </Link>
             </div>
           </div>
@@ -607,8 +607,8 @@ export default function CheckoutPage() {
                   <div className="flex items-start space-x-2 mb-3">
                     <div className="flex items-center space-x-2 mb-2">
                       <Image
-                        src="/donafacil-logo.png"
-                        alt="DonaFacil"
+                        src="/easygive-logo.png"
+                        alt="EasyGive"
                         width={16}
                         height={16}
                         className="flex-shrink-0 sm:w-5 sm:h-5"
@@ -663,6 +663,8 @@ export default function CheckoutPage() {
                           <Link
                             href="/donar-facil"
                             className="inline-flex items-center space-x-1 text-green-600 hover:text-green-700 font-medium"
+                            target="_blank"
+                            rel="noopener noreferrer"
                           >
                             <span>Learn more about this cause</span>
                             <ExternalLinkIcon className="h-3 w-3" />
