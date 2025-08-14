@@ -29,27 +29,10 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { Navigation } from "@/components/navigation";
-// import { useDonation } from "@/contexts/donation-context";
+import { useDonation } from "@/contexts/donation-context";
 import Image from "next/image";
-import { stellarService } from "@/services/stellar.service";
-import { useProvider } from "@/providers/Provider";
-import { walletService } from "@/services/wallet.service";
-import { ICrowdfundingContract } from "@/interfaces/contract.interface";
 
-interface IFlight {
-  id: number;
-  airline: string;
-  from: string;
-  to: string;
-  departure: string;
-  arrival: string;
-  duration: string;
-  price: number;
-  stops: string;
-  date: string;
-}
-
-const flights: IFlight[] = [
+const flights = [
   {
     id: 1,
     airline: "CryptoWings",
@@ -89,19 +72,14 @@ const flights: IFlight[] = [
 ];
 
 export default function CheckoutPage() {
-  const { currentAccount, setHashId } = useProvider();
-  console.log(currentAccount);
-  const campaignAddress =
-    "GBAPH22BDWNPPKY3Q7PUS2EY34TPRWJ53OGYKGZ55TSCQBGTQZ2AW66V";
-  const amount = 500;
-
   const searchParams = useSearchParams();
   const router = useRouter();
-  // const { addDonation } = useDonation();
+  const { addDonation } = useDonation();
   const flightId = searchParams.get("flight");
-  const [selectedFlight, setSelectedFlight] = useState<null | IFlight>(null);
+  const [selectedFlight, setSelectedFlight] = useState<any>(null);
   const [donationOption, setDonationOption] = useState("yes");
   const [showDonationModal, setShowDonationModal] = useState(false);
+  const [showBrokenHeart, setShowBrokenHeart] = useState(false);
   const [passengerInfo, setPassengerInfo] = useState({
     firstName: "",
     lastName: "",
@@ -118,7 +96,7 @@ export default function CheckoutPage() {
   useEffect(() => {
     if (flightId) {
       const flight = flights.find((f) => f.id === Number.parseInt(flightId));
-      if (flight) setSelectedFlight(flight);
+      setSelectedFlight(flight);
     }
   }, [flightId]);
 
@@ -131,8 +109,12 @@ export default function CheckoutPage() {
   };
 
   const confirmNoDonation = () => {
-    setDonationOption("no");
-    setShowDonationModal(false);
+    setShowBrokenHeart(true);
+    setTimeout(() => {
+      setDonationOption("no");
+      setShowDonationModal(false);
+      setShowBrokenHeart(false);
+    }, 1500);
   };
 
   const keepDonation = () => {
@@ -140,43 +122,17 @@ export default function CheckoutPage() {
     setShowDonationModal(false);
   };
 
-  // const handlePayment = () => {
-  //   alert("Confirm and pay button clicked!");
+  const handlePayment = () => {
+    alert("Confirm and pay button clicked!");
 
-  //   if (donationOption === "yes" && selectedFlight) {
-  //     addDonation({
-  //       amount: donationAmount,
-  //       service: `${selectedFlight.airline} - Flight ${selectedFlight.from} → ${selectedFlight.to}`, // translated service name
-  //       cause: "Clean Water Foundation", // translated cause name
-  //     });
-  //   }
-  //   // Simulate payment success
-  //   alert(
-  //     "Payment processed successfully with XLM! Thank you for your purchase" + // translated success message
-  //       (donationOption === "yes" ? " and your donation" : "") +
-  //       "."
-  //   );
-  //   router.push("/");
-  // };
-
-  const handleAddContribute = async () => {
-    const contractClient =
-      await stellarService.buildClient<ICrowdfundingContract>(currentAccount);
-
-    const xdr = (
-      await contractClient.contribute({
-        contributor: currentAccount,
-        campaign_address: campaignAddress,
-        amount,
-      })
-    ).toXDR();
-
-    const signedTx = await walletService.signTransaction(xdr);
-
-    const hashId = await stellarService.submitTransaction(signedTx.signedTxXdr);
-
-    setHashId(hashId);
-
+    if (donationOption === "yes" && selectedFlight) {
+      addDonation({
+        amount: donationAmount,
+        service: `${selectedFlight.airline} - Flight ${selectedFlight.from} → ${selectedFlight.to}`, // translated service name
+        cause: "Clean Water Foundation", // translated cause name
+      });
+    }
+    // Simulate payment success
     alert(
       "Payment processed successfully with XLM! Thank you for your purchase" + // translated success message
         (donationOption === "yes" ? " and your donation" : "") +
@@ -231,6 +187,60 @@ export default function CheckoutPage() {
           </DialogHeader>
 
           <div className="space-y-4">
+            <div className="flex justify-center mb-4">
+              <div className="relative">
+                <svg
+                  width="80"
+                  height="120"
+                  viewBox="0 0 80 120"
+                  className="mx-auto"
+                >
+                  {/* Bottle outline */}
+                  <path
+                    d="M25 20 L25 15 Q25 10 30 10 L50 10 Q55 10 55 15 L55 20 L60 25 Q65 30 65 35 L65 100 Q65 110 55 110 L25 110 Q15 110 15 100 L15 35 Q15 30 20 25 Z"
+                    fill="none"
+                    stroke="#3B82F6"
+                    strokeWidth="2"
+                  />
+                  {/* Water filling animation */}
+                  <path
+                    d="M20 105 L60 105 L60 100 Q60 95 55 95 L25 95 Q20 95 20 100 Z"
+                    fill="#3B82F6"
+                    className="animate-pulse"
+                  >
+                    <animate
+                      attributeName="d"
+                      values="M20 105 L60 105 L60 100 Q60 95 55 95 L25 95 Q20 95 20 100 Z;
+                              M20 75 L60 75 L60 70 Q60 65 55 65 L25 65 Q20 65 20 70 Z;
+                              M20 45 L60 45 L60 40 Q60 35 55 35 L25 35 Q20 35 20 40 Z"
+                      dur="3s"
+                      repeatCount="indefinite"
+                    />
+                  </path>
+                  {/* Donation drops */}
+                  <circle
+                    cx="40"
+                    cy="15"
+                    r="2"
+                    fill="#10B981"
+                    className="animate-bounce"
+                  >
+                    <animate
+                      attributeName="cy"
+                      values="15;25;35;45;55;65;75;85;95"
+                      dur="3s"
+                      repeatCount="indefinite"
+                    />
+                  </circle>
+                </svg>
+                <div className="text-center mt-2">
+                  <div className="text-xs text-gray-600 animate-pulse">
+                    Every donation fills the bottle of hope
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <div className="text-center">
               <div className="bg-gradient-to-r from-blue-50 to-green-50 p-3 sm:p-4 rounded-lg mb-4">
                 <div className="text-xl sm:text-2xl font-bold text-blue-600 mb-1">
@@ -259,12 +269,16 @@ export default function CheckoutPage() {
               </div>
             </div>
 
-            <div className="bg-yellow-50 p-3 rounded-lg border border-yellow-200">
-              <p className="text-sm text-yellow-800 text-center">
-                <strong>🏆 Join 12,000+ donors</strong> who&apos;ve made a
-                difference with complete transparency on Stellar blockchain
-              </p>
-            </div>
+            {showBrokenHeart && (
+              <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+                <div className="text-center">
+                  <div className="text-6xl animate-ping">💔</div>
+                  <div className="text-white mt-4 text-lg font-semibold animate-fade-in">
+                    Maybe next time...
+                  </div>
+                </div>
+              </div>
+            )}
 
             <div className="flex space-x-2">
               <Button
@@ -272,12 +286,13 @@ export default function CheckoutPage() {
                 className="flex-1 bg-green-600 hover:bg-green-700 text-white"
               >
                 <HeartIcon className="h-4 w-4 mr-2" />
-                Yes, I&apos;ll help!
+                Yes, I'll help!
               </Button>
               <Button
                 onClick={confirmNoDonation}
                 variant="outline"
                 className="flex-1 text-gray-600 hover:text-gray-700 bg-transparent"
+                disabled={showBrokenHeart}
               >
                 Skip this time
               </Button>
@@ -543,7 +558,7 @@ export default function CheckoutPage() {
                             htmlFor="donate-no"
                             className="text-xs sm:text-sm cursor-pointer leading-relaxed"
                           >
-                            Don&apos;t donate this time
+                            Don't donate this time
                           </Label>
                         </div>
                       </RadioGroup>
@@ -575,7 +590,7 @@ export default function CheckoutPage() {
                       <span className="text-sm sm:text-base">
                         ARS ${donationAmount.toLocaleString()}
                       </span>
-                      <div className="text-xs text-green-500">
+                      <div className="text-xs sm:text-sm text-green-500">
                         {arsToXlm(donationAmount)} XLM
                       </div>
                     </div>
@@ -593,7 +608,7 @@ export default function CheckoutPage() {
                   </div>
                 </div>
                 <Button
-                  onClick={handleAddContribute}
+                  onClick={handlePayment}
                   className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 mt-4 text-sm sm:text-base"
                 >
                   Confirm and pay ARS ${total.toLocaleString()}

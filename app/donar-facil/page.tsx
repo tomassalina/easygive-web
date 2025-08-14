@@ -235,6 +235,8 @@ export default function EasyGivePage() {
             <Card className="max-w-4xl mx-auto overflow-hidden">
               <div className="relative">
                 <Image
+                  width={256}
+                  height={256}
                   src="/african-children-clean-water.png"
                   alt="Children drinking clean water"
                   className="w-full h-64 object-cover"
@@ -453,6 +455,8 @@ export default function EasyGivePage() {
                       <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center space-x-4">
                           <Image
+                            width={40}
+                            height={40}
                             src={
                               companyLogos[
                                 donation.company as keyof typeof companyLogos
