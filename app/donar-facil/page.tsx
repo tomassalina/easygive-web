@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { Navigation } from "@/components/navigation";
 import { useDonation } from "@/contexts/donation-context";
+import Image from "next/image";
 
 // Company logos for donation history
 const companyLogos = {
@@ -233,7 +234,7 @@ export default function EasyGivePage() {
             {/* Current Cause */}
             <Card className="max-w-4xl mx-auto overflow-hidden">
               <div className="relative">
-                <img
+                <Image
                   src="/african-children-clean-water.png"
                   alt="Children drinking clean water"
                   className="w-full h-64 object-cover"
@@ -451,10 +452,11 @@ export default function EasyGivePage() {
                       {/* Company Header */}
                       <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center space-x-4">
-                          <img
+                          <Image
                             src={
-                              companyLogos[donation.company] ||
-                              "/placeholder.svg?height=40&width=40"
+                              companyLogos[
+                                donation.company as keyof typeof companyLogos
+                              ] || "/placeholder.svg?height=40&width=40"
                             }
                             alt={donation.company}
                             className="w-10 h-10 rounded-lg object-contain bg-white border"
@@ -478,7 +480,7 @@ export default function EasyGivePage() {
                           <div className="text-lg font-bold text-emerald-600">
                             $
                             {donation.recurring
-                              ? donation.totalDonated.toFixed(2)
+                              ? donation.totalDonated?.toFixed(2)
                               : donation.amount.toFixed(2)}
                           </div>
                           {donation.recurring && (

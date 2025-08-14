@@ -29,14 +29,27 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { Navigation } from "@/components/navigation";
-import { useDonation } from "@/contexts/donation-context";
+// import { useDonation } from "@/contexts/donation-context";
 import Image from "next/image";
 import { stellarService } from "@/services/stellar.service";
 import { useProvider } from "@/providers/Provider";
 import { walletService } from "@/services/wallet.service";
 import { ICrowdfundingContract } from "@/interfaces/contract.interface";
 
-const flights = [
+interface IFlight {
+  id: number;
+  airline: string;
+  from: string;
+  to: string;
+  departure: string;
+  arrival: string;
+  duration: string;
+  price: number;
+  stops: string;
+  date: string;
+}
+
+const flights: IFlight[] = [
   {
     id: 1,
     airline: "CryptoWings",
@@ -84,9 +97,9 @@ export default function CheckoutPage() {
 
   const searchParams = useSearchParams();
   const router = useRouter();
-  const { addDonation } = useDonation();
+  // const { addDonation } = useDonation();
   const flightId = searchParams.get("flight");
-  const [selectedFlight, setSelectedFlight] = useState<any>(null);
+  const [selectedFlight, setSelectedFlight] = useState<null | IFlight>(null);
   const [donationOption, setDonationOption] = useState("yes");
   const [showDonationModal, setShowDonationModal] = useState(false);
   const [passengerInfo, setPassengerInfo] = useState({
@@ -105,7 +118,7 @@ export default function CheckoutPage() {
   useEffect(() => {
     if (flightId) {
       const flight = flights.find((f) => f.id === Number.parseInt(flightId));
-      setSelectedFlight(flight);
+      if (flight) setSelectedFlight(flight);
     }
   }, [flightId]);
 
@@ -127,24 +140,24 @@ export default function CheckoutPage() {
     setShowDonationModal(false);
   };
 
-  const handlePayment = () => {
-    alert("Confirm and pay button clicked!");
+  // const handlePayment = () => {
+  //   alert("Confirm and pay button clicked!");
 
-    if (donationOption === "yes" && selectedFlight) {
-      addDonation({
-        amount: donationAmount,
-        service: `${selectedFlight.airline} - Flight ${selectedFlight.from} → ${selectedFlight.to}`, // translated service name
-        cause: "Clean Water Foundation", // translated cause name
-      });
-    }
-    // Simulate payment success
-    alert(
-      "Payment processed successfully with XLM! Thank you for your purchase" + // translated success message
-        (donationOption === "yes" ? " and your donation" : "") +
-        "."
-    );
-    router.push("/");
-  };
+  //   if (donationOption === "yes" && selectedFlight) {
+  //     addDonation({
+  //       amount: donationAmount,
+  //       service: `${selectedFlight.airline} - Flight ${selectedFlight.from} → ${selectedFlight.to}`, // translated service name
+  //       cause: "Clean Water Foundation", // translated cause name
+  //     });
+  //   }
+  //   // Simulate payment success
+  //   alert(
+  //     "Payment processed successfully with XLM! Thank you for your purchase" + // translated success message
+  //       (donationOption === "yes" ? " and your donation" : "") +
+  //       "."
+  //   );
+  //   router.push("/");
+  // };
 
   const handleAddContribute = async () => {
     const contractClient =
@@ -248,8 +261,8 @@ export default function CheckoutPage() {
 
             <div className="bg-yellow-50 p-3 rounded-lg border border-yellow-200">
               <p className="text-sm text-yellow-800 text-center">
-                <strong>🏆 Join 12,000+ donors</strong> who've made a difference
-                with complete transparency on Stellar blockchain
+                <strong>🏆 Join 12,000+ donors</strong> who&apos;ve made a
+                difference with complete transparency on Stellar blockchain
               </p>
             </div>
 
@@ -259,7 +272,7 @@ export default function CheckoutPage() {
                 className="flex-1 bg-green-600 hover:bg-green-700 text-white"
               >
                 <HeartIcon className="h-4 w-4 mr-2" />
-                Yes, I'll help!
+                Yes, I&apos;ll help!
               </Button>
               <Button
                 onClick={confirmNoDonation}
@@ -530,7 +543,7 @@ export default function CheckoutPage() {
                             htmlFor="donate-no"
                             className="text-xs sm:text-sm cursor-pointer leading-relaxed"
                           >
-                            Don't donate this time
+                            Don&apos;t donate this time
                           </Label>
                         </div>
                       </RadioGroup>
