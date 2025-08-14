@@ -700,8 +700,11 @@ export default function CheckoutPage() {
                 <Button
                   onClick={handleAddContribute}
                   className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 mt-4 text-sm sm:text-base"
+                  disabled={!currentAccount}
                 >
-                  Confirm and pay ARS ${total.toLocaleString()}
+                  {currentAccount
+                    ? `Confirm and pay ARS ${total.toLocaleString()}`
+                    : "Connect to your wallet first"}
                 </Button>
                 <p className="text-xs text-gray-500 text-center mt-2 leading-relaxed">
                   By confirming, you accept our terms and conditions.
