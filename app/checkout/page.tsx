@@ -31,8 +31,25 @@ import Link from "next/link";
 import { Navigation } from "@/components/navigation";
 import { useDonation } from "@/contexts/donation-context";
 import Image from "next/image";
+import { useProvider } from "@/providers/Provider";
+import { stellarService } from "@/services/stellar.service";
+import { ICrowdfundingContract } from "@/interfaces/contract.interface";
+import { walletService } from "@/services/wallet.service";
 
-const flights = [
+interface IFlight {
+  id: number;
+  airline: string;
+  from: string;
+  to: string;
+  departure: string;
+  arrival: string;
+  duration: string;
+  price: number;
+  stops: string;
+  date: string;
+}
+
+const flights: IFlight[] = [
   {
     id: 1,
     airline: "CryptoWings",
@@ -72,20 +89,27 @@ const flights = [
 ];
 
 export default function CheckoutPage() {
+  const { currentAccount, setHashId } = useProvider();
+
+  const campaignAddress =
+    "GBAPH22BDWNPPKY3Q7PUS2EY34TPRWJ53OGYKGZ55TSCQBGTQZ2AW66V";
+  const amount = 500;
+
   const searchParams = useSearchParams();
   const router = useRouter();
   const { addDonation } = useDonation();
   const flightId = searchParams.get("flight");
-  const [selectedFlight, setSelectedFlight] = useState<any>(null);
+  const [selectedFlight, setSelectedFlight] = useState<null | IFlight>(null);
   const [donationOption, setDonationOption] = useState("yes");
   const [showDonationModal, setShowDonationModal] = useState(false);
-  const [showBrokenHeart, setShowBrokenHeart] = useState(false);
   const [passengerInfo, setPassengerInfo] = useState({
     firstName: "",
     lastName: "",
     email: "",
     phone: "",
   });
+  const [showCelebration] = useState(false);
+  const [showBrokenHeart, setShowBrokenHeart] = useState(false);
 
   const arsToXlm = (arsAmount: number) => {
     // Conversion rate: 1 XLM ≈ 2500 ARS (fictional rate for demo)
@@ -96,7 +120,7 @@ export default function CheckoutPage() {
   useEffect(() => {
     if (flightId) {
       const flight = flights.find((f) => f.id === Number.parseInt(flightId));
-      setSelectedFlight(flight);
+      if (flight) setSelectedFlight(flight);
     }
   }, [flightId]);
 
@@ -122,8 +146,42 @@ export default function CheckoutPage() {
     setShowDonationModal(false);
   };
 
-  const handlePayment = () => {
-    alert("Confirm and pay button clicked!");
+  // const handlePayment = () => {
+  //   alert("Confirm and pay button clicked!");
+
+  //   if (donationOption === "yes" && selectedFlight) {
+  //     addDonation({
+  //       amount: donationAmount,
+  //       service: `${selectedFlight.airline} - Flight ${selectedFlight.from} → ${selectedFlight.to}`, // translated service name
+  //       cause: "Clean Water Foundation", // translated cause name
+  //     });
+  //   }
+  //   // Simulate payment success
+  //   alert(
+  //     "Payment processed successfully with XLM! Thank you for your purchase" + // translated success message
+  //       (donationOption === "yes" ? " and your donation" : "") +
+  //       "."
+  //   );
+  //   router.push("/");
+  // };
+
+  const handleAddContribute = async () => {
+    const contractClient =
+      await stellarService.buildClient<ICrowdfundingContract>(currentAccount);
+
+    const xdr = (
+      await contractClient.contribute({
+        contributor: currentAccount,
+        campaign_address: campaignAddress,
+        amount,
+      })
+    ).toXDR();
+
+    const signedTx = await walletService.signTransaction(xdr);
+
+    const hashId = await stellarService.submitTransaction(signedTx.signedTxXdr);
+
+    setHashId(hashId);
 
     if (donationOption === "yes" && selectedFlight) {
       addDonation({
@@ -132,12 +190,7 @@ export default function CheckoutPage() {
         cause: "Clean Water Foundation", // translated cause name
       });
     }
-    // Simulate payment success
-    alert(
-      "Payment processed successfully with XLM! Thank you for your purchase" + // translated success message
-        (donationOption === "yes" ? " and your donation" : "") +
-        "."
-    );
+
     router.push("/");
   };
 
@@ -174,6 +227,43 @@ export default function CheckoutPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <Navigation variant="aerobooking" />
+
+      {showCelebration && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80">
+          {[...Array(90)].map((_, i) => (
+            <div
+              key={i}
+              className="absolute animate-confetti"
+              style={{
+                left: `${Math.random() * 100}%`,
+                animationDelay: `${Math.random() * 5}ms`,
+                animationDuration: `${2 + Math.random() * 4}s`,
+              }}
+            >
+              <div
+                className="w-1 h-1 rounded-full opacity-80"
+                style={{
+                  backgroundColor: ["#10B981", "#3B82F6", "#F59E0B"][
+                    Math.floor(Math.random() * 3)
+                  ],
+                }}
+              />
+            </div>
+          ))}
+
+          <div className="bg-white rounded-xl p-8 shadow-2xl text-center animate-bounce-in border">
+            <div className="text-5xl mb-3">✨</div>
+            <h3 className="text-xl font-bold text-gray-900 mb-2">
+              Payment Successful!
+            </h3>
+            <p className="text-sm text-gray-600">
+              {donationOption === "yes"
+                ? "Thank you for your purchase and donation!"
+                : "Thank you for your purchase!"}
+            </p>
+          </div>
+        </div>
+      )}
 
       <Dialog open={showDonationModal} onOpenChange={setShowDonationModal}>
         <DialogContent className="max-w-sm sm:max-w-md mx-4 sm:mx-auto">
@@ -286,7 +376,7 @@ export default function CheckoutPage() {
                 className="flex-1 bg-green-600 hover:bg-green-700 text-white"
               >
                 <HeartIcon className="h-4 w-4 mr-2" />
-                Yes, I'll help!
+                Yes, I&apos;ll help!
               </Button>
               <Button
                 onClick={confirmNoDonation}
@@ -558,7 +648,7 @@ export default function CheckoutPage() {
                             htmlFor="donate-no"
                             className="text-xs sm:text-sm cursor-pointer leading-relaxed"
                           >
-                            Don't donate this time
+                            Don&apos;t donate this time
                           </Label>
                         </div>
                       </RadioGroup>
@@ -608,7 +698,7 @@ export default function CheckoutPage() {
                   </div>
                 </div>
                 <Button
-                  onClick={handlePayment}
+                  onClick={handleAddContribute}
                   className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 mt-4 text-sm sm:text-base"
                 >
                   Confirm and pay ARS ${total.toLocaleString()}
